@@ -111,6 +111,9 @@ const (
 	// DebugArg is the argument enables debugging mode
 	DebugArg = "debug"
 
+	// DebugDatapath enables datapath debug messages
+	DebugDatapath = "debug-datapath"
+
 	// DebugVerbose is the argument enables verbose log message for particular subsystems
 	DebugVerbose = "debug-verbose"
 
@@ -1475,6 +1478,7 @@ type DaemonConfig struct {
 	ConfigFile                    string
 	ConfigDir                     string
 	Debug                         bool
+	DebugDatapath                 bool
 	DebugVerbose                  []string
 	DisableConntrack              bool
 	DisableK8sServices            bool
@@ -2233,6 +2237,7 @@ func (c *DaemonConfig) Populate() {
 	c.ClusterMeshConfig = viper.GetString(ClusterMeshConfigName)
 	c.DatapathMode = viper.GetString(DatapathMode)
 	c.Debug = viper.GetBool(DebugArg)
+	c.DebugDatapath = viper.GetBool(DebugDatapath)
 	c.DebugVerbose = viper.GetStringSlice(DebugVerbose)
 	c.DirectRoutingDevice = viper.GetString(DirectRoutingDevice)
 	c.DisableConntrack = viper.GetBool(DisableConntrack)

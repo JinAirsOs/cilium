@@ -248,6 +248,9 @@ func init() {
 	flags.BoolP(option.DebugArg, "D", false, "Enable debugging mode")
 	option.BindEnv(option.DebugArg)
 
+	flags.Bool(option.DebugDatapath, false, "Enable datapath debug messages")
+	option.BindEnv(option.DebugDatapath)
+
 	flags.StringSlice(option.DebugVerbose, []string{}, "List of enabled verbose debug groups")
 	option.BindEnv(option.DebugVerbose)
 
@@ -1013,8 +1016,8 @@ func initEnv(cmd *cobra.Command) {
 	bpf.CheckOrMountFS(option.Config.BPFRoot, k8s.IsEnabled())
 	cgroups.CheckOrMountCgrpFS(option.Config.CGroupRoot)
 
-	option.Config.Opts.SetBool(option.Debug, false)
-	option.Config.Opts.SetBool(option.DebugLB, false)
+	option.Config.Opts.SetBool(option.Debug, option.Config.DebugDatapath)
+	option.Config.Opts.SetBool(option.DebugLB, option.Config.DebugDatapath)
 	option.Config.Opts.SetBool(option.DropNotify, true)
 	option.Config.Opts.SetBool(option.TraceNotify, true)
 	option.Config.Opts.SetBool(option.PolicyVerdictNotify, true)
