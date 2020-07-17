@@ -82,7 +82,8 @@ type IPCache struct {
 
 	listeners []IPIdentityMappingListener
 
-	namedPorts policy.NamedPortMultiMap
+	needNamedPorts bool
+	namedPorts     policy.NamedPortMultiMap
 }
 
 // NewIPCache returns a new IPCache with the mappings of endpoint IP to security
@@ -178,6 +179,9 @@ func (ipc *IPCache) getK8sMetadata(ip string) *K8sMetadata {
 
 // updateNamedPorts accumulates named ports from all K8sMetadata entries to a single map
 func (ipc *IPCache) updateNamedPorts() (namedPortsChanged bool) {
+	if !ipc.needNamedPorts {
+		return false
+	}
 	// Collect new named Ports
 	npm := make(policy.NamedPortMultiMap, len(ipc.namedPorts))
 	for _, km := range ipc.ipToK8sMetadata {
@@ -475,6 +479,10 @@ func (ipc *IPCache) deleteLocked(ip string, source source.Source) (namedPortsCha
 // GetNamedPorts returns a copy of the named ports map. May return nil.
 func (ipc *IPCache) GetNamedPorts() (npm policy.NamedPortMultiMap) {
 	ipc.mutex.Lock()
+	if !ipc.needNamedPorts {
+		ipc.needNamedPorts = true
+		ipc.updateNamedPorts()
+	}
 	// Caller can keep using the map after the lock is released, as the map is never changed
 	// once published.
 	npm = ipc.namedPorts
