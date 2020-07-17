@@ -110,6 +110,10 @@ data:
   debug-verbose: "{{ .Values.global.debug.verbose }}"
 {{- end }}
 
+{{- if .Values.global.debug.datapath }}
+  debug-datapath: "{{ .Values.global.debug.datapath }}"
+{{- end }}
+
 {{- if ne (int .Values.global.agent.healthPort) 9876 }}
   # Set the TCP port for the agent health status API. This is not the port used
   # for cilium-health.
