@@ -102,7 +102,7 @@ func (k *K8sWatcher) ciliumNodeInit(ciliumNPClient *k8s.K8sCiliumClient, asyncCo
 		k.k8sAPIGroups.addAPI(k8sAPIGroupCiliumNodeV2)
 		go ciliumNodeInformer.Run(isConnected)
 
-		<-kvstore.Client().Connected(context.TODO())
+		<-kvstore.Connected()
 		close(isConnected)
 
 		log.Info("Connected to key-value store, stopping CiliumNode watcher")

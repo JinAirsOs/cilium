@@ -17,6 +17,7 @@ package kvstore
 import (
 	"context"
 	"fmt"
+	"time"
 )
 
 var (
@@ -84,4 +85,27 @@ func NewClient(ctx context.Context, selectedBackend string, opts map[string]stri
 	}
 
 	return module.newClient(ctx, options)
+}
+
+// Connected returns a channel which is closed when the following conditions
+// have been met:
+// * The kvstore client has been configured
+// * Connectivity has been established
+// * Quorum in the kvstore has been reached
+//
+// The channel will *not* be closed if the kvstore client is closed before
+// connectivity has been achieved. It will wait until a new kvstore client is
+// configured to again wait for connectivity.
+func Connected() (c <-chan struct{}) {
+	c = make(chan struct{})
+	go func(c chan struct{}) {
+		for {
+			if err := <-Client().Connected(context.Background()); err == nil {
+				close(c)
+				return
+			}
+			time.Sleep(100 * time.Millisecond)
+		}
+	}(c)
+	return
 }
